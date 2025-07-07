@@ -1,41 +1,47 @@
 // src/pages/Signup.jsx
-import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, UserPlus, User, Undo } from 'lucide-react';
-import  {useAuth} from '../context/AuthContext';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, UserPlus, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
-import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        });
-   const { login } = useAuth();
-    const navigate = useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-    const handleChange = (e) => {
+  const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/register', formData);
-      alert('Signup successful. Please login.');
-      navigate('/login');
+      
+      // ✅ OPTION 1: Direct login after signup
+      login(res.data.token, res.data.user);
+      navigate('/hotels'); // or wherever you want to send after login
+
+      // ✅ OPTION 2 (if you prefer redirect to login instead):
+      // alert(res.data.msg || 'Signup successful');
+      // navigate('/login');
+      
     } catch (err) {
-      alert(err.response?.data?.mes|| 'Signup failed');
+      alert(err.response?.data?.msg || 'Signup failed');
     }
   };
-
 
   return (
     <div className="h-screen w-full bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 sm:p-10 animate-fade-in text-slate-100">
+        
         {/* Header */}
         <div className="text-center mb-6">
           <UserPlus className="mx-auto text-emerald-400 mb-2" size={40} />
@@ -45,6 +51,7 @@ const Signup = () => {
 
         {/* Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
+
           {/* Name */}
           <div className="relative">
             <User className="absolute top-3.5 left-3 text-emerald-400" size={20} />
@@ -64,9 +71,9 @@ const Signup = () => {
           <div className="relative">
             <Mail className="absolute top-3.5 left-3 text-emerald-400" size={20} />
             <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               type="email"
               required
               placeholder="Email"
@@ -80,8 +87,8 @@ const Signup = () => {
             <Lock className="absolute top-3.5 left-3 text-emerald-400" size={20} />
             <input
               name="password"
-            value={formData.password}
-            onChange={handleChange}
+              value={formData.password}
+              onChange={handleChange}
               type={showPassword ? 'text' : 'password'}
               required
               placeholder="Password"
@@ -107,7 +114,7 @@ const Signup = () => {
             Signup
           </button>
 
-          {/* Google Signup */}
+          {/* Google Signup (non-functional placeholder) */}
           <button
             type="button"
             className="w-full py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium rounded-lg transition-all duration-300 hover:scale-105"
