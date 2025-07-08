@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://pgs-life-backend.onrender.com',
+  baseURL: 'https://pglife-backend.onrender.com',
 });
 
 api.interceptors.request.use(
